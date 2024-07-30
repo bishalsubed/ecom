@@ -26,13 +26,8 @@ const orderSchema: Schema<Order> = new Schema({
             message: 'Phone number must be a 10-digit number'
         }
     },
-
     address: {
         type: String,
-        required: true
-    },
-    amount: {
-        type: Number,
         required: true
     },
     products: [{
@@ -50,6 +45,10 @@ const orderSchema: Schema<Order> = new Schema({
             required: true
         }
     }],
+    amount: {
+        type: Number,
+        required: true
+    },
     createdAt: {
         type: Date,
         required: true,
