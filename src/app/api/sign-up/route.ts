@@ -49,7 +49,6 @@ export async function POST(request: Request) {
                 message: emailResponse.message || "Error sending Verification Email"
             }, { status: 500 })
         }
-
         return Response.json({
             success: true,
             message: "User Registered Successfully. Please verify your email"
