@@ -6,7 +6,7 @@ export interface Product extends Document{
     price:number;
     category:string;
     stock:number;
-    imageUrl:string;
+    image:string;
     rating:number;
     slug:string;
     size:string;
@@ -35,13 +35,14 @@ const productSchema:Schema<Product> = new Schema({
         type:Number,
         required:true,
     },
-    imageUrl:{
+    image:{
         type:String,
         required:true,
     },
     rating:{
         type:Number,
         required:true,
+        default:0
     },
     slug:{
         type:String,
@@ -63,7 +64,7 @@ const productSchema:Schema<Product> = new Schema({
       },
 })
 
-const ProductModel = (mongoose.models.User as mongoose.Model<Product>) || mongoose.model<Product>("Product",productSchema)
+const ProductModel = (mongoose.models.Product as mongoose.Model<Product>) || mongoose.model<Product>("Product",productSchema)
 
 
 export default ProductModel
