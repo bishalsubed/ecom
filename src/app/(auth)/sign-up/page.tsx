@@ -39,7 +39,7 @@ const signup = () => {
         title:"Success",
         description:res.data.message
       })
-      router.replace(`/verify/${data.email}`)
+      router.replace(`/verify`)
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
       const errorMessage = axiosError.response?.data.message
