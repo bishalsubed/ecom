@@ -80,7 +80,7 @@ const signin = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit">SignIn</Button>
           </form>
         </Form>
         <div className="flex flex-col items-center gap-2">
