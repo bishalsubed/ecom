@@ -3,6 +3,7 @@ import { Product as ProductModel } from "./Product";
 
 export interface Order extends Document {
     username: string;
+    email: string;
     phoneNumber: number;
     address: string;
     amount: number;
@@ -15,6 +16,11 @@ const orderSchema: Schema<Order> = new Schema({
     username: {
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique:true,
     },
     phoneNumber: {
         type: Number,
