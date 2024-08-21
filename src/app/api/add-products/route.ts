@@ -4,37 +4,37 @@ import { uploadOnCloudinary } from "@/helpers/uploadOnCloudinary";
 
 function generateSlug(title: string): string {
     return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  }
+}
 export async function POST(request: Request) {
     await dbConnect();
 
     try {
         const formData = await request.formData();
         const title = formData.get('title') as string;
-        const desc = formData.get('desc') as string;
+        const desc = formData.get('description') as string;
         const price = parseFloat(formData.get('price') as string);
         const category = formData.get('category') as string;
         const stock = parseInt(formData.get('stock') as string, 10);
         const size = formData.get('size') as string;
         const color = formData.get('color') as string;
-        const productImage = formData.get("image") as File;
-
-        console.log(title, desc, price, category, stock, size, color);
+        const productImage = formData.get("image") as File | null;
 
         if (!title?.trim() || !desc?.trim() || isNaN(price) || !category?.trim() ||
-        isNaN(stock) || !size?.trim() || !color?.trim()) {
+            isNaN(stock) || !size?.trim() || !color?.trim()) {
             return Response.json({ message: "All fields should be provided" }, { status: 400 });
         }
-
         if (!productImage) {
-            return Response.json({ message: "No file provided" }, { status: 400 });
+            return Response.json({ message: "No image file found" }, { status: 400 });
+        }
+
+        if (!(productImage instanceof File)) {
+            return Response.json({ message: "Invalid file object" }, { status: 400 });
         }
 
         const fileBuffer = await productImage.arrayBuffer();
         const mimeType = productImage.type;
         const encoding = "base64";
         const base64Data = Buffer.from(fileBuffer).toString("base64");
-
         const fileUri = `data:${mimeType};${encoding},${base64Data}`;
 
         const res = await uploadOnCloudinary(fileUri, productImage.name);
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         return Response.json({
             success: true,
             message: "Product Registered Successfully."
-        }, { status: 201 })
+        }, { status: 201 });
 
 
     } catch (error) {
