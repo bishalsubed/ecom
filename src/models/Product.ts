@@ -1,6 +1,7 @@
 import mongoose, {Schema,Document} from "mongoose";
 
 export interface Product extends Document{
+    _id?: string; 
     title:string;
     desc: string;
     price:number;
