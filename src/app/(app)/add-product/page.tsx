@@ -66,10 +66,7 @@ const AddProduct = () => {
         title: "Success",
         description: res.data.message,
       });
-
-      // Clear the form fields
       reset();
-      // Clear the file input
       if (imageRef.current) {
         imageRef.current.value = "";
       }
