@@ -22,6 +22,7 @@ import { useToast } from "@/components/ui/use-toast";
 const AddProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [colors, setColors] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(null);
   const { toast } = useToast();
   const imageRef = useRef<HTMLInputElement>(null);
 
@@ -61,6 +62,19 @@ const AddProduct = () => {
     });
   };
 
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+
+      reader.readAsDataURL(file); 
+      form.setValue("image", event.target.files); 
+    }
+  };
 
   const onSubmit = async (data: z.infer<typeof addProductSchema>) => {
     setIsSubmitting(true);
@@ -72,7 +86,7 @@ const AddProduct = () => {
       formData.append("category", data.category);
       formData.append("stock", data.stock);
       formData.append("color", colors.join(", "));
-      
+
       if (data.image && data.image.length > 0) {
         formData.append("image", data.image[0]);
       }
@@ -91,11 +105,12 @@ const AddProduct = () => {
       if (imageRef.current) {
         imageRef.current.value = "";
       }
-      setColors([])
+      setColors([]);
+      setImagePreview(null); 
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       const errorMessage = axiosError.response?.data.message;
-      
+
       toast({
         title: "Submission failed",
         description: errorMessage,
@@ -146,15 +161,32 @@ const AddProduct = () => {
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Images</FormLabel>
+                  <FormLabel className="text-gray-700 font-semibold">Images</FormLabel>
                   <FormControl>
-                    <Input
-                      type="file"
-                      multiple
-                      ref={imageRef}
-                      onChange={(e) => field.onChange(e.target.files)}
-                      className="border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300"
-                    />
+                    <div className="relative">
+                      <input
+                        type="file"
+                        multiple
+                        ref={imageRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label
+                        htmlFor="file-upload"
+                        className="cursor-pointer border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out shadow-sm hover:border-blue-400 inline-block"
+                      >
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview as string}
+                            alt="Preview"
+                            className="w-32 h-32 object-cover rounded-lg"
+                          />
+                        ) : (
+                          'Select Images'
+                        )}
+                      </label>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
