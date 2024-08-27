@@ -48,7 +48,6 @@ const productSchema:Schema<Product> = new Schema({
     slug:{
         type:String,
         required:true,
-        unique:true,
     },
     color:{
         type:String,
