@@ -71,7 +71,6 @@ const AddProduct = () => {
       formData.append("price", data.price);
       formData.append("category", data.category);
       formData.append("stock", data.stock);
-      formData.append("size", data.size);
       formData.append("color", colors.join(", "));
       
       if (data.image && data.image.length > 0) {
@@ -203,19 +202,6 @@ const AddProduct = () => {
                       {...field}
                       onChange={(e) => field.onChange(e.target.value)}
                       className="border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="size"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-700">Size</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., L*B" {...field} className="border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

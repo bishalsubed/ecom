@@ -15,12 +15,11 @@ export async function POST(request: Request) {
         const price = parseFloat(formData.get('price') as string);
         const category = formData.get('category') as string;
         const stock = parseInt(formData.get('stock') as string, 10);
-        const size = formData.get('size') as string;
         const color = formData.get('color') as string;
         const productImage = formData.get("image") as File | null;
 
         if (!title?.trim() || !desc?.trim() || isNaN(price) || !category?.trim() ||
-            isNaN(stock) || !size?.trim() || !color?.trim()) {
+            isNaN(stock)  || !color?.trim()) {
             return Response.json({ message: "All fields should be provided" }, { status: 400 });
         }
         if (!productImage) {
@@ -54,7 +53,6 @@ export async function POST(request: Request) {
             stock,
             image: imgUrl,
             slug,
-            size,
             color,
         });
 
