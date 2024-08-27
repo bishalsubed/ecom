@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const AddProduct = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [colors, setColors] = useState<string[]>([]);
   const { toast } = useToast();
   const imageRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +41,27 @@ const AddProduct = () => {
 
   const { reset, handleSubmit, control, setValue } = form;
 
+  const handleColorInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      const color = event.currentTarget.value.trim();
+      if (color && !colors.includes(color)) {
+        setColors((prevColors) => [...prevColors, color]);
+        setValue("color", colors.join(", "));
+        event.currentTarget.value = "";
+      }
+    }
+  };
+
+  const removeColor = (colorToRemove: string) => {
+    setColors((prevColors) => {
+      const newColors = prevColors.filter(color => color !== colorToRemove);
+      setValue("color", newColors.join(", "));
+      return newColors;
+    });
+  };
+
+
   const onSubmit = async (data: z.infer<typeof addProductSchema>) => {
     setIsSubmitting(true);
     try {
@@ -50,7 +72,7 @@ const AddProduct = () => {
       formData.append("category", data.category);
       formData.append("stock", data.stock);
       formData.append("size", data.size);
-      formData.append("color", data.color);
+      formData.append("color", colors.join(", "));
       
       if (data.image && data.image.length > 0) {
         formData.append("image", data.image[0]);
@@ -70,6 +92,7 @@ const AddProduct = () => {
       if (imageRef.current) {
         imageRef.current.value = "";
       }
+      setColors([])
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       const errorMessage = axiosError.response?.data.message;
@@ -205,8 +228,23 @@ const AddProduct = () => {
                 <FormItem>
                   <FormLabel className="text-gray-700">Available Color</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter Product Colors" {...field} className="border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300" />
+                    <Input
+                      placeholder="Enter colors and press Enter"
+                      onKeyDown={handleColorInputKeyDown}
+                      className="border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-300"
+                    />
                   </FormControl>
+                  <div className="mt-2">
+                    {colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 cursor-pointer"
+                        onClick={() => removeColor(color)}
+                      >
+                        {color} &times;
+                      </span>
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
