@@ -50,10 +50,6 @@ const productSchema:Schema<Product> = new Schema({
         required:true,
         unique:true,
     },
-    size:{
-        type:String,
-        required:true,
-    },
     color:{
         type:String,
         required:true,
