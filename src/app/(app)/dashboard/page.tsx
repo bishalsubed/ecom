@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { Product } from '@/models/Product'
-import { getSession, signIn, signOut } from 'next-auth/react'
+
 import axios, { AxiosError } from 'axios'
 import { ApiResponse } from '@/types/ApiResponse'
 import { useToast } from '@/components/ui/use-toast'
@@ -40,8 +40,6 @@ const Dashboard = () => {
   return (
     <>
       <div>Dashboard</div>
-      <button onClick={() => { signOut() }}>SignOut</button>
-
       <section className="text-gray-600 body-font">
         <div className="container px-5 py-24 mx-auto">
           <div className="flex justify-around items-center flex-wrap -m-4">
