@@ -6,6 +6,7 @@ export interface Order extends Document {
     email: string;
     phoneNumber: number;
     address: string;
+    isProductDelivered: boolean;
     amount: number;
     products: ProductModel[];
     createdAt: Date;
@@ -20,7 +21,7 @@ const orderSchema: Schema<Order> = new Schema({
     email: {
         type: String,
         required: true,
-        unique:true,
+        unique: true,
     },
     phoneNumber: {
         type: Number,
@@ -35,6 +36,10 @@ const orderSchema: Schema<Order> = new Schema({
     address: {
         type: String,
         required: true
+    },
+    isProductDelivered:{ 
+        type: Boolean, 
+        default: false 
     },
     products: [{
         product: {
