@@ -143,7 +143,7 @@ const productDesc = () => {
                                 <span className="title-font font-medium text-2xl text-gray-900">Rs.{product.price}</span>
                                 <div className='flex gap-4'>
                                     <Button className='flex ml-auto py-2 px-6 rounded' type="submit">Buy Now</Button>
-                                    <Button onClick={()=>{addToCart({id: productId,name: product.title,price:product.price,quantity: 1})}} className='flex ml-auto py-2 px-6 rounded' type="submit">Add To Cart</Button>
+                                    <Button onClick={()=>{addToCart({id: productId,name: product.title,price:product.price,quantity: 1,img:product.image})}} className='flex ml-auto py-2 px-6 rounded' type="submit">Add To Cart</Button>
                                 </div>
                             </div>
                         </div>

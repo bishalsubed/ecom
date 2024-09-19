@@ -4,6 +4,7 @@ export interface CartItem {
     name: string;
     price: number;
     quantity: number;
+    img:string;
 }
 
 export const addItemToCart = (itemObj: CartItem): void => {

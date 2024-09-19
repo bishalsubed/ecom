@@ -6,13 +6,12 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { ModeToggle } from './theme-toggle'
-import { Label } from "@/components/ui/label"
 import { Button } from './ui/button'
-import { Input } from './ui/input'
 import { useToast } from './ui/use-toast'
 import {
   Sheet,
   SheetClose,
+  SheetFooter,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -41,6 +40,23 @@ export default function Example() {
       toast({
         title: "Success",
         description: "Product Removed from the cart",
+      });
+    } catch (error) {
+      toast({
+        title: "Error occured",
+        description: "Unable to remove product from the cart",
+        variant: "destructive"
+      });
+    }
+  }
+
+  const clearCart = () => {
+    try {
+      clearCartItems()
+      setCartProduct(getCartItems())
+      toast({
+        title: "Success",
+        description: "Cleared the cart",
       });
     } catch (error) {
       toast({
@@ -113,44 +129,58 @@ export default function Example() {
               <SheetTrigger asChild>
                 <Button variant="outline">View Cart</Button>
               </SheetTrigger>
-              <SheetContent>
+              <SheetContent className='flex flex-col h-full'>
                 <SheetHeader>
                   <SheetTitle>Your Cart</SheetTitle>
                   <SheetDescription>
                     Review your items before checkout. Modify quantity or remove items if needed.
                   </SheetDescription>
                 </SheetHeader>
-                {cartProduct.map(((product: CartItem, index) => (
-                  <div key={index} className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="product-name" className="text-right">
-                        Product
-                      </Label>
-                      <div id="product-name" className="col-span-3">
-                        {product.name}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="quantity" className="text-right">
-                        Quantity
-                      </Label>
-                      <Input id="quantity" type="number" value="1" min="1" className="col-span-3" readOnly/>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="price" className="text-right">
-                        Price
-                      </Label>
-                      <div id="price" className="col-span-3">
-                        {product.price}
-                      </div>
-                    </div>
-                    <Button type="button" onClick={() => removeFromCart(product.id)}>
-                      Remove From Cart
-                    </Button>
+                {cartProduct.length == 0 ? (
+                  <div className="text-center text-lg font-semibold text-gray-500 py-20">
+                    Looks like your cart is empty.
                   </div>
-
-
-                )))}
+                ) :
+                  (<div className="flex-1 overflow-y-auto space-y-2">
+                    {cartProduct.map(((product: CartItem, index) => (
+                      <div key={index} className="flex gap-4 py-4 items-center">
+                        <div className="w-1/4">
+                          <img
+                            alt={`${product.name} image`}
+                            className="cursor-pointer object-cover object-center w-full h-auto max-h-24"
+                            src={product.img}
+                          />
+                        </div>
+                        <div className="w-3/4 flex flex-col justify-between">
+                          <div className="font-medium text-lg uppercase">
+                            {product.name}
+                          </div>
+                          <div className="flex justify-between items-center mt-2">
+                            <div className="text-sm font-medium">
+                              Quantity: {product.quantity}
+                            </div>
+                            <div id="price" className="text-sm font-medium">
+                              रु.{product.price}
+                            </div>
+                            <button
+                              type="button"
+                              className="flex items-center justify-center"
+                              onClick={() => removeFromCart(product.id)}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )))}
+                  </div>)}
+                {cartProduct.length > 0 && (<SheetFooter className="border-t p-4">
+                  <SheetClose asChild>
+                    <Button type="button" onClick={() => { clearCart() }} className="w-full bg-red-500 text-white hover:bg-red-700">Clear Cart</Button>
+                  </SheetClose>
+                </SheetFooter>)}
               </SheetContent>
             </Sheet>
 
