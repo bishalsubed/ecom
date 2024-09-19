@@ -1,12 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { ModeToggle } from './theme-toggle'
-import { addItemToCart, clearCartItems, getCartItems, removeItemFromCart } from '@/helpers/cartHelper'
+import { Label } from "@/components/ui/label"
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { useToast } from './ui/use-toast'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { CartItem, clearCartItems, getCartItems, removeItemFromCart } from '@/helpers/cartHelper'
 
 const navigation = [
   { name: 'Products', href: '/dashboard' },
@@ -18,6 +31,39 @@ const navigation = [
 export default function Example() {
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [cartProduct, setCartProduct] = useState<CartItem[]>([])
+  const { toast } = useToast()
+
+  const removeFromCart = (id: string) => {
+    try {
+      removeItemFromCart(id)
+      setCartProduct(getCartItems())
+      toast({
+        title: "Success",
+        description: "Product Removed from the cart",
+      });
+    } catch (error) {
+      toast({
+        title: "Error occured",
+        description: "Unable to remove product from the cart",
+        variant: "destructive"
+      });
+    }
+  }
+
+  useEffect(() => {
+    try {
+      setCartProduct(getCartItems())
+    } catch (error) {
+      toast({
+        title: "Unable",
+        description: "Unable to Obtain Cart Items",
+        variant: "destructive",
+      });
+    }
+
+
+  }, [])
 
   return (
     <div className="bg-green-50 dark:bg-gray-950 py-12 mb-6">
@@ -62,16 +108,63 @@ export default function Example() {
           <div className='mx-4'>
             <ModeToggle />
           </div>
+          {session && (<div className='mx-4'>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline">View Cart</Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Your Cart</SheetTitle>
+                  <SheetDescription>
+                    Review your items before checkout. Modify quantity or remove items if needed.
+                  </SheetDescription>
+                </SheetHeader>
+                {cartProduct.map(((product: CartItem, index) => (
+                  <div key={index} className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="product-name" className="text-right">
+                        Product
+                      </Label>
+                      <div id="product-name" className="col-span-3">
+                        {product.name}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="quantity" className="text-right">
+                        Quantity
+                      </Label>
+                      <Input id="quantity" type="number" value="1" min="1" className="col-span-3" readOnly/>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="price" className="text-right">
+                        Price
+                      </Label>
+                      <div id="price" className="col-span-3">
+                        {product.price}
+                      </div>
+                    </div>
+                    <Button type="button" onClick={() => removeFromCart(product.id)}>
+                      Remove From Cart
+                    </Button>
+                  </div>
+
+
+                )))}
+              </SheetContent>
+            </Sheet>
+
+          </div>)}
           <div className="flex lg:hidden">
-  <button
-    type="button"
-    onClick={() => setMobileMenuOpen(true)}
-    className="m-2.5 inline-flex items-center justify-center dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all shadow-lg"
-  >
-    <span className="sr-only">Open main menu</span>
-    <Bars3Icon aria-hidden="true" className="h-6 w-6 text-gray-700 dark:text-gray-200" />
-  </button>
-</div>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="m-2.5 inline-flex items-center justify-center dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-2 rounded-full text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all shadow-lg"
+            >
+              <span className="sr-only">Open main menu</span>
+              <Bars3Icon aria-hidden="true" className="h-6 w-6 text-gray-700 dark:text-gray-200" />
+            </button>
+          </div>
 
 
         </nav>
@@ -128,8 +221,6 @@ export default function Example() {
           </DialogPanel>
         </Dialog>
       </header>
-
-
     </div>
   )
 }

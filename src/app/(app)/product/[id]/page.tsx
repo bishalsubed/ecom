@@ -7,22 +7,20 @@ import { useToast } from '@/components/ui/use-toast'
 import { Loader } from 'lucide-react'
 import { Product } from '@/models/Product'
 import { Button } from '@/components/ui/button'
+import {CartItem, addItemToCart } from '@/helpers/cartHelper'
+
 const productDesc = () => {
     const [searchingProduct, setSearchingProduct] = useState(true)
     const [product, setProduct] = useState<Product>()
     const params = useParams()
     const { id } = params
+    const productId = Array.isArray(id) ? id[0] : id;
     const { toast } = useToast()
-
     useEffect(() => {
         ; (async () => {
             try {
                 const response = await axios.get(`/api/get-product?id=${id}`)
                 setProduct(response.data.data)
-                toast({
-                    title: "Success",
-                    description: response.data.message
-                })
             } catch (error) {
                 const axiosError = error as AxiosError<ApiResponse>;
                 const errorMessage = axiosError.response?.data.message
@@ -38,7 +36,23 @@ const productDesc = () => {
             ()
 
     }, [id])
-    
+
+    const addToCart = (itemObj:CartItem) => {
+       try {
+         addItemToCart(itemObj)
+         toast({
+            title: "Success",
+            description: "Product Added to the cart",
+          });
+       } catch (error) {
+        toast({
+            title: "Operation failed",
+            description: "Unable to Add To Cart",
+            variant: "destructive",
+          });
+       }
+    }
+
     const colorClasses = {
         red: "bg-red-800",
         blue: "bg-blue-800",
@@ -65,7 +79,7 @@ const productDesc = () => {
         zinc: "bg-zinc-800",
         neutral: "bg-neutral-800",
     };
-    
+
     return (
         <>
             {product && <section className="text-gray-600 body-font overflow-hidden">
@@ -122,17 +136,15 @@ const productDesc = () => {
                                             <button key={index} className={`border-2 border-gray-300 ml-1 ${colourClassName} rounded-full w-6 h-6 focus:outline-none`}></button>
                                         )
                                     })}
-                                </div> 
+                                </div>
                                 <div className='ml-6 '>Remaining: <span className='font-bold'> {product.stock} pieces </span></div>
                             </div>
-                            <div className="flex">
+                            <div className="flex justify-between">
                                 <span className="title-font font-medium text-2xl text-gray-900">Rs.{product.price}</span>
-                                <Button className='flex ml-auto py-2 px-6 rounded' type="submit">Buy Now</Button>
-                                <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
-                                    <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
-                                    </svg>
-                                </button>
+                                <div className='flex gap-4'>
+                                    <Button className='flex ml-auto py-2 px-6 rounded' type="submit">Buy Now</Button>
+                                    <Button onClick={()=>{addToCart({id: productId,name: product.title,price:product.price,quantity: 1})}} className='flex ml-auto py-2 px-6 rounded' type="submit">Add To Cart</Button>
+                                </div>
                             </div>
                         </div>
                     </div>

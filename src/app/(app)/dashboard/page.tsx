@@ -20,10 +20,6 @@ const Dashboard = () => {
     ; (async () => {
       try {
         let response = await axios.get("/api/get-products");
-        toast({
-          title: "Success",
-          description: response.data.message
-        })
         setProductArray(response.data.data)
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>
