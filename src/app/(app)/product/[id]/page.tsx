@@ -7,7 +7,8 @@ import { useToast } from '@/components/ui/use-toast'
 import { Loader } from 'lucide-react'
 import { Product } from '@/models/Product'
 import { Button } from '@/components/ui/button'
-import {CartItem, addItemToCart } from '@/helpers/cartHelper'
+import {useCart } from '@/context/CardContext'
+import { CartItemType } from '@/helpers/cartHelper'
 
 const productDesc = () => {
     const [searchingProduct, setSearchingProduct] = useState(true)
@@ -16,6 +17,7 @@ const productDesc = () => {
     const { id } = params
     const productId = Array.isArray(id) ? id[0] : id;
     const { toast } = useToast()
+    const { addToCart} = useCart();
     useEffect(() => {
         ; (async () => {
             try {
@@ -37,9 +39,9 @@ const productDesc = () => {
 
     }, [id])
 
-    const addToCart = (itemObj:CartItem) => {
+    const handleAddToCart = (itemObj:CartItemType) => {
        try {
-         addItemToCart(itemObj)
+         addToCart(itemObj)
          toast({
             title: "Success",
             description: "Product Added to the cart",
@@ -143,7 +145,7 @@ const productDesc = () => {
                                 <span className="title-font font-medium text-2xl text-gray-900">Rs.{product.price}</span>
                                 <div className='flex gap-4'>
                                     <Button className='flex ml-auto py-2 px-6 rounded' type="submit">Buy Now</Button>
-                                    <Button onClick={()=>{addToCart({id: productId,name: product.title,price:product.price,quantity: 1,img:product.image})}} className='flex ml-auto py-2 px-6 rounded' type="submit">Add To Cart</Button>
+                                    <Button onClick={()=>{handleAddToCart({id: productId,name: product.title,price:product.price,quantity: 1,img:product.image})}} className='flex ml-auto py-2 px-6 rounded' type="submit">Add To Cart</Button>
                                 </div>
                             </div>
                         </div>

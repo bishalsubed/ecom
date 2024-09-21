@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { ModeToggle } from './theme-toggle'
 import { Button } from './ui/button'
 import { useToast } from './ui/use-toast'
+import { useCart } from '@/context/CardContext'
 import {
   Sheet,
   SheetClose,
@@ -18,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { CartItem, clearCartItems, getCartItems, removeItemFromCart } from '@/helpers/cartHelper'
+import { CartItemType } from '@/helpers/cartHelper'
 
 const navigation = [
   { name: 'Products', href: '/dashboard' },
@@ -30,13 +31,12 @@ const navigation = [
 export default function Example() {
   const { data: session, status } = useSession()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [cartProduct, setCartProduct] = useState<CartItem[]>([])
   const { toast } = useToast()
+  const { cart, clearCart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
 
-  const removeFromCart = (id: string) => {
+  const handleRemoveFromCart = (id: string) => {
     try {
-      removeItemFromCart(id)
-      setCartProduct(getCartItems())
+      removeFromCart(id)
       toast({
         title: "Success",
         description: "Product Removed from the cart",
@@ -50,36 +50,47 @@ export default function Example() {
     }
   }
 
-  const clearCart = () => {
+  const handleClearCart = () => {
     try {
-      clearCartItems()
-      setCartProduct(getCartItems())
+      clearCart()
       toast({
         title: "Success",
-        description: "Cleared the cart",
+        description: "Product cart cleared",
       });
     } catch (error) {
       toast({
         title: "Error occured",
-        description: "Unable to remove product from the cart",
+        description: "Unable to clear product cart",
         variant: "destructive"
       });
     }
   }
 
-  useEffect(() => {
+  const handleIncreaseQuantity = (id: string) => {
     try {
-      setCartProduct(getCartItems())
+      increaseQuantity(id)
     } catch (error) {
       toast({
-        title: "Unable",
-        description: "Unable to Obtain Cart Items",
-        variant: "destructive",
+        title: "Error occured",
+        description: "Unable to add product quantity",
+        variant: "destructive"
       });
     }
+  }
 
+  const handleDecreaseQuantity = (id: string) => {
+    try {
+      decreaseQuantity(id)
+    } catch (error) {
+      toast({
+        title: "Error occured",
+        description: "Unable to subtract product quantity",
+        variant: "destructive"
+      });
+    }
+  }
 
-  }, [])
+  
 
   return (
     <div className="bg-green-50 dark:bg-gray-950 py-12 mb-6">
@@ -136,13 +147,13 @@ export default function Example() {
                     Review your items before checkout. Modify quantity or remove items if needed.
                   </SheetDescription>
                 </SheetHeader>
-                {cartProduct.length == 0 ? (
+                {cart.length == 0 ? (
                   <div className="text-center text-lg font-semibold text-gray-500 py-20">
                     Looks like your cart is empty.
                   </div>
                 ) :
                   (<div className="flex-1 overflow-y-auto space-y-2">
-                    {cartProduct.map(((product: CartItem, index) => (
+                    {cart.map(((product: CartItemType, index:number) => (
                       <div key={index} className="flex gap-4 py-4 items-center">
                         <div className="w-1/4">
                           <img
@@ -156,16 +167,27 @@ export default function Example() {
                             {product.name}
                           </div>
                           <div className="flex justify-between items-center mt-2">
-                            <div className="text-sm font-medium">
-                              Quantity: {product.quantity}
+                            <div className=" flex gap-2 font-medium">
+                              <button onClick={() => { handleIncreaseQuantity(product.id) }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                              </button>
+                              {product.quantity}
+                              <button onClick={() => { handleDecreaseQuantity(product.id) }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                              </button>
+
                             </div>
                             <div id="price" className="text-sm font-medium">
-                              रु.{product.price}
+                              रु.{(product.price) * (product.quantity)}
                             </div>
                             <button
                               type="button"
                               className="flex items-center justify-center"
-                              onClick={() => removeFromCart(product.id)}
+                              onClick={() =>handleRemoveFromCart(product.id)}
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -176,9 +198,9 @@ export default function Example() {
                       </div>
                     )))}
                   </div>)}
-                {cartProduct.length > 0 && (<SheetFooter className="border-t p-4">
+                {cart.length > 0 && (<SheetFooter className="border-t p-4">
                   <SheetClose asChild>
-                    <Button type="button" onClick={() => { clearCart() }} className="w-full bg-red-500 text-white hover:bg-red-700">Clear Cart</Button>
+                    <Button type="button" onClick={() => { handleClearCart() }} className="w-full bg-red-500 text-white hover:bg-red-700">Clear Cart</Button>
                   </SheetClose>
                 </SheetFooter>)}
               </SheetContent>
