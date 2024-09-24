@@ -8,15 +8,24 @@ const CartContext = createContext<any>(null);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cart, setCart] = useState<CartItem[]>([]);
+    const [subTotal, setSubTotal] = useState<number>(0);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            // Only run this on the client side
             const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
             setCart(storedCart);
         }
-    }, []); // Empty array ensures this effect only runs once, after the component mounts
+    }, []);
 
+    useEffect(() => {
+        const calculateSubTotal = () => {
+            const subt = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            setSubTotal(subt);
+        };
+
+        calculateSubTotal();
+    }, [cart]); 
+    
     useEffect(() => {
         const handleStorageChange = () => {
             setCart(getCartItems());
@@ -33,7 +42,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const updateCart = () => {
-        setCart(getCartItems());
+        const updatedCart = getCartItems();
+        setCart(updatedCart); 
     };
 
     const addToCart = (itemObj: CartItem) => {
@@ -62,10 +72,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart }}>
+        <CartContext.Provider value={{ cart, subTotal, addToCart, removeFromCart, increaseQuantity, decreaseQuantity, clearCart }}>
             {children}
         </CartContext.Provider>
     );
 };
 
 export const useCart = () => useContext(CartContext);
+
