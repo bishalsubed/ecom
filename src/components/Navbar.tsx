@@ -154,16 +154,16 @@ export default function Example() {
                 ) :
                   (<div className="flex-1 overflow-y-auto space-y-2">
                     {cart.map(((product: CartItemType, index: number) => (
-                      <div key={index} className="flex gap-4 py-4 items-center">
+                      <div key={index} className="flex gap-4 py-3 items-center">
                         <div className="w-1/4">
                           <img
                             alt={`${product.name} image`}
-                            className="cursor-pointer object-cover object-center w-full h-auto max-h-24"
+                            className="cursor-pointer object-cover object-center w-full h-auto max-h-14"
                             src={product.img}
                           />
                         </div>
                         <div className="w-3/4 flex flex-col justify-between">
-                          <div className="font-medium text-lg uppercase">
+                          <div className="font-medium sm:text-lg uppercase">
                             {product.name}
                           </div>
                           <div className="flex justify-between items-center mt-2">
@@ -197,16 +197,19 @@ export default function Example() {
                         </div>
                       </div>
                     )))}
-                    <div className='flex justify-center tracking-tight font-medium bg-green-100 p-2'>
+                    <div className='flex justify-center tracking-tight font-medium bg-green-100 p-2 mt-auto'>
                       SubTotal: रु. <span className='font-semibold'>{subTotal}</span>
                     </div>
 
                   </div>)}
-                {cart.length > 0 && (<SheetFooter className="border-t p-4">
-                  <SheetClose asChild>
-                    <Button type="button" onClick={() => { handleClearCart() }} className="w-full bg-red-500 text-white hover:bg-red-700">Clear Cart</Button>
-                  </SheetClose>
-                </SheetFooter>)}
+                {cart.length > 0 && (
+                  <SheetFooter className="border-t p-4 flex justify-between">
+                    <SheetClose asChild>
+                      <Button type="button" onClick={() => { handleClearCart() }} className="w-full bg-red-500 text-white hover:bg-red-700 mr-2">Clear Cart</Button>
+                    </SheetClose>
+                    <Button type="button"  className="w-full my-2 sm:my-0 bg-blue-500 text-white hover:bg-blue-700">Checkout</Button>
+                  </SheetFooter>
+                )}
               </SheetContent>
             </Sheet>
 

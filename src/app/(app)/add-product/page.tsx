@@ -35,8 +35,7 @@ const AddProduct = () => {
       price: "",
       category: "",
       stock: "",
-      size: "",
-      color: ""
+      color: "",
     }
   });
 
@@ -78,6 +77,7 @@ const AddProduct = () => {
 
   const onSubmit = async (data: z.infer<typeof addProductSchema>) => {
     setIsSubmitting(true);
+    console.log("submitting")
     try {
       const formData = new FormData();
       formData.append("title", data.title);
