@@ -17,7 +17,7 @@ export async function POST(request: Request) {
                     message: "User already exists with this email"
                 }, { status: 500 })
             } else {
-                const hashedPassword = await bcrypt.hash(password,10)
+                const hashedPassword = await bcrypt.hash(password, 10)
                 existingUserByEmail.password = hashedPassword
                 existingUserByEmail.verifyCode = verifyCode
                 existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         } else {
             const hashedPassword = await bcrypt.hash(password, 10)
             const expiryDate = new Date()
-            expiryDate.setDate(expiryDate.getHours() + 1)
+            expiryDate.setHours(expiryDate.getHours() + 1);
 
             const newUser = new UserModel({
                 username,
