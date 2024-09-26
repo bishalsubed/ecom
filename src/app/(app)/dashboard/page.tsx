@@ -15,6 +15,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const router = useRouter()
 
+  const titleShortner = (text: string) =>text.length > 30 ? text.slice(0, 30) + "...." : text;
 
   useEffect(() => {
     ; (async () => {
@@ -38,7 +39,7 @@ const Dashboard = () => {
       <div>Dashboard</div>
       <section className="text-gray-600 body-font">
         <div className="container px-5 py-24 mx-auto">
-          <div className="flex justify-around items-center flex-wrap -m-4">
+          <div className="flex justify-around items-center gap-4 flex-wrap -m-4">
             {productArray.map((product, index) => {
               const key = product._id ? product._id : index;
               return (
@@ -48,7 +49,7 @@ const Dashboard = () => {
                   </Link>
                   <div className="mt-4">
                     <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">{product.category}</h3>
-                    <Link href={`/product/${product._id}`}><h2 className="text-gray-900 title-font text-lg font-medium cursor-pointer">{product.title}</h2></Link>
+                    <Link href={`/product/${product._id}`}><h2 className="text-gray-900 title-font text-lg font-medium cursor-pointer">{titleShortner(product.title)}</h2></Link>
                     <p className="mt-1">Rs.{product.price}</p>
                   </div>
                 </div>
@@ -58,7 +59,6 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
-
     </>
   )
 }

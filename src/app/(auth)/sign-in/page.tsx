@@ -31,7 +31,6 @@ const signin = () => {
       email: data.email,
       password: data.password
     })
-    console.log(result)
     if (result?.error) {
       toast({
         title: "Login failed",
